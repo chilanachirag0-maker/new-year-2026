@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy New Year 2026</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI', sans-serif;
+}
+
+body{
+  height:100vh;
+  background:radial-gradient(circle at top, #111, #000);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  color:white;
+}
+
+.container{
+  text-align:center;
+  z-index:2;
+}
+
+.year{
+  font-size:5rem;
+  color:gold;
+  text-shadow:0 0 20px gold, 0 0 40px goldenrod;
+  opacity:0;
+  animation:reveal 3s ease forwards;
+}
+
+h1{
+  margin-top:15px;
+  font-size:3rem;
+  letter-spacing:5px;
+  color:#ffd700;
+  text-shadow:0 0 25px rgba(255,215,0,0.8);
+  opacity:0;
+  animation:reveal 3s ease forwards;
+  animation-delay:1.5s;
+}
+
+p{
+  margin-top:10px;
+  opacity:0;
+  animation:reveal 3s ease forwards;
+  animation-delay:3s;
+}
+
+.signature{
+  margin-top:40px;
+  font-size:1rem;
+  opacity:0.8;
+}
+
+.tap{
+  margin-top:25px;
+  font-size:0.9rem;
+  opacity:0.6;
+  animation:blink 1.5s infinite;
+}
+
+@keyframes reveal{
+  from{opacity:0; transform:translateY(30px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+@keyframes blink{
+  0%,100%{opacity:0.3;}
+  50%{opacity:1;}
+}
+
+/* Fireworks */
+.firework{
+  position:absolute;
+  width:4px;
+  height:4px;
+  background:gold;
+  border-radius:50%;
+  animation:explode 2s infinite;
+}
+
+@keyframes explode{
+  0%{transform:scale(0); opacity:1;}
+  100%{transform:scale(8); opacity:0;}
+}
+</style>
+</head>
+
+<body onclick="playMusic()">
+
+<div class="container">
+  <div class="year">2026</div>
+  <h1>HAPPY NEW YEAR</h1>
+  <p>Wishing you happiness, health & success</p>
+  <div class="signature">— From Chirag ❤️</div>
+  <div class="tap">Tap anywhere to begin ✨</div>
+</div>
+
+<audio id="song1">
+  <source src="song1.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="song2" loop>
+  <source src="song2.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+let started = false;
+
+function playMusic(){
+  if(started) return;
+  started = true;
+
+  const pop = document.getElementById("song1");
+  const bg = document.getElementById("song2");
+
+  pop.volume = 1.0;
+  bg.volume = 0.5;
+
+  pop.play();
+  pop.onended = () => {
+    bg.play();
+  };
+}
+
+// Fireworks generator
+for(let i=0;i<35;i++){
+  const fw = document.createElement("div");
+  fw.className = "firework";
+  fw.style.left = Math.random()*100 + "vw";
+  fw.style.top = Math.random()*100 + "vh";
+  fw.style.animationDelay = Math.random()*2 + "s";
+  document.body.appendChild(fw);
+}
+</script>
+
+</body>
+</html>
