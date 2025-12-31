@@ -6,16 +6,11 @@
 <title>Happy New Year 2026</title>
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Segoe UI', sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
 
 body{
   height:100vh;
-  background:radial-gradient(circle at top, #111, #000);
+  background:radial-gradient(circle at top,#0a0f1f,#000);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -23,122 +18,152 @@ body{
   color:white;
 }
 
-.container{
-  text-align:center;
-  z-index:2;
+.container{text-align:center;z-index:2}
+
+/* 🎁 BOX */
+.box{
+  width:140px;height:140px;
+  background:linear-gradient(145deg,#1e3c72,#2a5298);
+  border-radius:16px;
+  box-shadow:0 0 40px rgba(255,215,0,.8);
+  margin:auto;
+  cursor:pointer;
+  animation:float 2s infinite;
+  position:relative;
 }
+.box::after{
+  content:"🎁";
+  font-size:56px;
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-12px)}
+}
+
+/* Countdown */
+.countdown{
+  font-size:4rem;
+  color:gold;
+  margin-bottom:20px;
+}
+
+/* Reveal text */
+.reveal{opacity:0;transform:translateY(30px)}
+.show{animation:reveal 2s forwards}
 
 .year{
   font-size:5rem;
   color:gold;
-  text-shadow:0 0 20px gold, 0 0 40px goldenrod;
-  opacity:0;
-  animation:reveal 3s ease forwards;
+  text-shadow:0 0 25px gold,0 0 50px goldenrod;
 }
-
 h1{
-  margin-top:15px;
   font-size:3rem;
   letter-spacing:5px;
   color:#ffd700;
-  text-shadow:0 0 25px rgba(255,215,0,0.8);
-  opacity:0;
-  animation:reveal 3s ease forwards;
-  animation-delay:1.5s;
 }
-
-p{
-  margin-top:10px;
-  opacity:0;
-  animation:reveal 3s ease forwards;
-  animation-delay:3s;
-}
-
-.signature{
-  margin-top:40px;
-  font-size:1rem;
-  opacity:0.8;
-}
-
-.tap{
-  margin-top:25px;
-  font-size:0.9rem;
-  opacity:0.6;
-  animation:blink 1.5s infinite;
-}
+p{margin-top:10px}
+.signature{margin-top:30px;opacity:.85}
 
 @keyframes reveal{
-  from{opacity:0; transform:translateY(30px);}
-  to{opacity:1; transform:translateY(0);}
+  to{opacity:1;transform:translateY(0)}
 }
 
-@keyframes blink{
-  0%,100%{opacity:0.3;}
-  50%{opacity:1;}
-}
-
-/* Fireworks */
+/* 🎆 BIG FIREWORKS */
 .firework{
   position:absolute;
-  width:4px;
-  height:4px;
+  width:6px;height:6px;
   background:gold;
   border-radius:50%;
   animation:explode 2s infinite;
 }
-
 @keyframes explode{
-  0%{transform:scale(0); opacity:1;}
-  100%{transform:scale(8); opacity:0;}
+  0%{transform:scale(0);opacity:1}
+  100%{transform:scale(18);opacity:0}
+}
+
+/* 🔊 Mute */
+.mute{
+  position:fixed;
+  bottom:20px;right:20px;
+  background:#222;color:white;
+  border:none;
+  padding:12px 14px;
+  border-radius:50%;
+  font-size:16px;
 }
 </style>
 </head>
 
-<body onclick="playMusic()">
+<body>
 
-<div class="container">
-  <div class="year">2026</div>
-  <h1>HAPPY NEW YEAR</h1>
-  <p>Wishing you happiness, health & success</p>
-  <div class="signature">— From Chirag ❤️</div>
-  <div class="tap">Tap anywhere to begin ✨</div>
+<div class="container" onclick="startCountdown()">
+  <div id="count" class="countdown">Tap the Box</div>
+  <div class="box" id="box"></div>
+
+  <div id="text" class="reveal">
+    <div class="year">2026</div>
+    <h1>HAPPY NEW YEAR</h1>
+    <p>Wishing you happiness, health & success</p>
+    <div class="signature">— From Chirag ❤️</div>
+  </div>
 </div>
 
-<audio id="song1">
-  <source src="song1.mp3" type="audio/mpeg">
-</audio>
+<button class="mute" onclick="toggleMute(event)">🔊</button>
 
-<audio id="song2" loop>
-  <source src="song2.mp3" type="audio/mpeg">
-</audio>
+<audio id="song1" src="song1.mp3"></audio>
+<audio id="song2" src="song2.mp3" loop></audio>
+<audio id="boxSound" src="box.mp3"></audio>
+<audio id="fireSound" src="firework.mp3"></audio>
 
 <script>
-let started = false;
+let started=false;
+const s1=song1,s2=song2,boxS=boxSound,fireS=fireSound;
+const count=document.getElementById("count");
 
-function playMusic(){
+function startCountdown(){
   if(started) return;
-  started = true;
-
-  const pop = document.getElementById("song1");
-  const bg = document.getElementById("song2");
-
-  pop.volume = 1.0;
-  bg.volume = 0.5;
-
-  pop.play();
-  pop.onended = () => {
-    bg.play();
-  };
+  started=true;
+  let i=3;
+  count.textContent=i;
+  const timer=setInterval(()=>{
+    i--;
+    if(i>0){count.textContent=i;}
+    else{
+      clearInterval(timer);
+      count.textContent="";
+      openBox();
+    }
+  },1000);
 }
 
-// Fireworks generator
-for(let i=0;i<35;i++){
-  const fw = document.createElement("div");
-  fw.className = "firework";
-  fw.style.left = Math.random()*100 + "vw";
-  fw.style.top = Math.random()*100 + "vh";
-  fw.style.animationDelay = Math.random()*2 + "s";
-  document.body.appendChild(fw);
+function openBox(){
+  document.getElementById("box").style.display="none";
+  document.getElementById("text").classList.add("show");
+
+  boxS.play();
+  s1.volume=1;s2.volume=.5;
+  s1.play();
+  s1.onended=()=>s2.play();
+
+  fireS.play();
+  for(let i=0;i<60;i++){
+    const fw=document.createElement("div");
+    fw.className="firework";
+    fw.style.left=Math.random()*100+"vw";
+    fw.style.top=Math.random()*100+"vh";
+    document.body.appendChild(fw);
+  }
+}
+
+function toggleMute(e){
+  e.stopPropagation();
+  const muted=s1.muted;
+  [s1,s2,boxS,fireS].forEach(a=>a.muted=!muted);
+  e.target.textContent=muted?"🔊":"🔇";
 }
 </script>
 
