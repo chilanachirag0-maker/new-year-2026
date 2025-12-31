@@ -28,6 +28,21 @@ body{
   z-index:2;
 }
 
+/* Instruction text */
+.instruction{
+  font-size:1.1rem;
+  margin-bottom:14px;
+  color:#e0e0e0;
+}
+
+/* Countdown numbers */
+.count{
+  font-size:5rem;
+  color:gold;
+  text-shadow:0 0 25px gold,0 0 50px goldenrod;
+  margin-bottom:15px;
+}
+
 /* 🎁 Gift Box */
 .box{
   width:150px;
@@ -81,16 +96,10 @@ h1{
   color:#ffd700;
 }
 
-p{
-  margin-top:10px;
-}
+p{margin-top:10px;}
+.signature{margin-top:30px;opacity:0.85}
 
-.signature{
-  margin-top:30px;
-  opacity:0.85;
-}
-
-/* 🎆 REAL FIREWORKS */
+/* 🎆 Fireworks */
 .firework{
   position:absolute;
   width:10px;
@@ -113,7 +122,7 @@ p{
   100%{transform:translate(var(--x),var(--y));opacity:0;}
 }
 
-/* 🔊 Mute Button */
+/* 🔊 Mute */
 .mute{
   position:fixed;
   bottom:20px;
@@ -131,7 +140,14 @@ p{
 
 <body>
 
-<div class="container" onclick="openBox()">
+<div class="container" onclick="startCountdown()">
+
+  <div class="instruction">
+    Click on the box. A small gift for you.🎁
+  </div>
+
+  <div id="counter" class="count"></div>
+
   <div class="box" id="box"></div>
 
   <div id="text" class="reveal">
@@ -150,15 +166,35 @@ p{
 <audio id="fireSound" src="firework.mp3"></audio>
 
 <script>
-let opened=false;
+let started=false;
+const counter=document.getElementById("counter");
+const box=document.getElementById("box");
+const text=document.getElementById("text");
+
 const s1=song1, s2=song2, boxS=boxSound, fireS=fireSound;
 
-function openBox(){
-  if(opened) return;
-  opened=true;
+function startCountdown(){
+  if(started) return;
+  started=true;
 
-  document.getElementById("box").style.display="none";
-  document.getElementById("text").classList.add("show");
+  let num=3;
+  counter.textContent=num;
+
+  const timer=setInterval(()=>{
+    num--;
+    if(num>0){
+      counter.textContent=num;
+    }else{
+      clearInterval(timer);
+      counter.textContent="";
+      openBox();
+    }
+  },1000);
+}
+
+function openBox(){
+  box.style.display="none";
+  text.classList.add("show");
 
   boxS.play();
   fireS.play();
@@ -172,7 +208,7 @@ function openBox(){
   setInterval(startFireworks,2000);
 }
 
-/* 🎆 Firework Logic */
+/* 🎆 Fireworks logic */
 function fireworkBurst(x,y){
   const colors=["#FFD700","#FF3B3B","#4FC3F7","#B388FF","#FF9800"];
   const fw=document.createElement("div");
@@ -218,3 +254,4 @@ function toggleMute(e){
 
 </body>
 </html>
+
