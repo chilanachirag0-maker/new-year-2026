@@ -10,7 +10,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family: 'Segoe UI', sans-serif;
+  font-family:'Segoe UI',sans-serif;
 }
 
 body{
@@ -28,17 +28,26 @@ body{
   z-index:2;
 }
 
-/* 🎁 BOX */
+/* Countdown */
+.countdown{
+  font-size:2.2rem;
+  color:gold;
+  margin-bottom:20px;
+}
+
+/* 🎁 Box */
 .box{
   width:150px;
   height:150px;
   background:linear-gradient(145deg,#1e3c72,#2a5298);
   border-radius:18px;
-  box-shadow:0 0 45px rgba(255,215,0,0.9);
+  box-shadow:0 0 45px rgba(255,215,0,.9);
   margin:auto;
   cursor:pointer;
   animation:float 2s infinite;
   position:relative;
+  opacity:0.4;
+  pointer-events:none;
 }
 
 .box::after{
@@ -55,13 +64,6 @@ body{
   50%{transform:translateY(-14px);}
 }
 
-/* Countdown */
-.countdown{
-  font-size:4rem;
-  color:gold;
-  margin-bottom:20px;
-}
-
 /* Reveal text */
 .reveal{
   opacity:0;
@@ -73,10 +75,7 @@ body{
 }
 
 @keyframes reveal{
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
+  to{opacity:1;transform:translateY(0);}
 }
 
 .year{
@@ -91,16 +90,10 @@ h1{
   color:#ffd700;
 }
 
-p{
-  margin-top:10px;
-}
+p{margin-top:10px;}
+.signature{margin-top:30px;opacity:.85}
 
-.signature{
-  margin-top:30px;
-  opacity:0.85;
-}
-
-/* 🎆 REAL FIREWORKS (DOT EXPLOSION) */
+/* 🎆 Fireworks */
 .firework{
   position:absolute;
   width:10px;
@@ -119,17 +112,11 @@ p{
 }
 
 @keyframes explode{
-  0%{
-    transform:translate(0,0);
-    opacity:1;
-  }
-  100%{
-    transform:translate(var(--x),var(--y));
-    opacity:0;
-  }
+  0%{transform:translate(0,0);opacity:1;}
+  100%{transform:translate(var(--x),var(--y));opacity:0;}
 }
 
-/* 🔊 Mute button */
+/* 🔊 Mute */
 .mute{
   position:fixed;
   bottom:20px;
@@ -147,9 +134,10 @@ p{
 
 <body>
 
-<div class="container" onclick="startCountdown()">
-  <div id="count" class="countdown">Tap the Box</div>
-  <div class="box" id="box"></div>
+<div class="container">
+  <div id="liveCountdown" class="countdown"></div>
+
+  <div class="box" id="box" onclick="openBox()"></div>
 
   <div id="text" class="reveal">
     <div class="year">2026</div>
@@ -167,38 +155,51 @@ p{
 <audio id="fireSound" src="firework.mp3"></audio>
 
 <script>
-let started=false;
+const countdownEl=document.getElementById("liveCountdown");
+const box=document.getElementById("box");
+const text=document.getElementById("text");
+
 const s1=song1, s2=song2, boxS=boxSound, fireS=fireSound;
-const count=document.getElementById("count");
+let opened=false;
 
-function startCountdown(){
-  if(started) return;
-  started=true;
+/* ⏳ Live countdown (device time based) */
+function updateCountdown(){
+  const now=new Date();
+  const target=new Date(now.getFullYear()+1,0,1,0,0,0);
+  const diff=target-now;
 
-  let i=3;
-  count.textContent=i;
+  if(diff<=0){
+    countdownEl.textContent="🎆 Happy New Year 2026 🎆";
+    box.style.opacity="1";
+    box.style.pointerEvents="auto";
+    clearInterval(timer);
+    return;
+  }
 
-  const timer=setInterval(()=>{
-    i--;
-    if(i>0){
-      count.textContent=i;
-    }else{
-      clearInterval(timer);
-      count.textContent="";
-      openBox();
-    }
-  },1000);
+  const h=Math.floor(diff/(1000*60*60));
+  const m=Math.floor((diff/(1000*60))%60);
+  const s=Math.floor((diff/1000)%60);
+
+  countdownEl.textContent=
+    `${h.toString().padStart(2,"0")}h `
+   +`${m.toString().padStart(2,"0")}m `
+   +`${s.toString().padStart(2,"0")}s`;
 }
 
+const timer=setInterval(updateCountdown,1000);
+updateCountdown();
+
+/* 🎁 Open gift */
 function openBox(){
-  document.getElementById("box").style.display="none";
-  document.getElementById("text").classList.add("show");
+  if(opened) return;
+  opened=true;
+
+  box.style.display="none";
+  text.classList.add("show");
 
   boxS.play();
   fireS.play();
 
-  s1.volume=1;
-  s2.volume=0.5;
   s1.play();
   s1.onended=()=>s2.play();
 
@@ -206,7 +207,7 @@ function openBox(){
   setInterval(startFireworks,2000);
 }
 
-/* 🎆 Firework logic */
+/* 🎆 Fireworks logic */
 function fireworkBurst(x,y){
   const colors=["#FFD700","#FF3B3B","#4FC3F7","#B388FF","#FF9800"];
   const fw=document.createElement("div");
