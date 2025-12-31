@@ -10,7 +10,7 @@
 
 body{
   height:100vh;
-  background:radial-gradient(circle at top,#0a0f1f,#000);
+  background:radial-gradient(circle at top,#0b1025,#000);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -22,10 +22,10 @@ body{
 
 /* 🎁 BOX */
 .box{
-  width:140px;height:140px;
+  width:150px;height:150px;
   background:linear-gradient(145deg,#1e3c72,#2a5298);
-  border-radius:16px;
-  box-shadow:0 0 40px rgba(255,215,0,.8);
+  border-radius:18px;
+  box-shadow:0 0 45px rgba(255,215,0,.9);
   margin:auto;
   cursor:pointer;
   animation:float 2s infinite;
@@ -33,7 +33,7 @@ body{
 }
 .box::after{
   content:"🎁";
-  font-size:56px;
+  font-size:60px;
   position:absolute;
   top:50%;left:50%;
   transform:translate(-50%,-50%);
@@ -41,7 +41,7 @@ body{
 
 @keyframes float{
   0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-12px)}
+  50%{transform:translateY(-14px)}
 }
 
 /* Countdown */
@@ -52,13 +52,13 @@ body{
 }
 
 /* Reveal text */
-.reveal{opacity:0;transform:translateY(30px)}
+.reveal{opacity:0;transform:translateY(40px)}
 .show{animation:reveal 2s forwards}
 
 .year{
   font-size:5rem;
   color:gold;
-  text-shadow:0 0 25px gold,0 0 50px goldenrod;
+  text-shadow:0 0 25px gold,0 0 55px goldenrod;
 }
 h1{
   font-size:3rem;
@@ -72,17 +72,25 @@ p{margin-top:10px}
   to{opacity:1;transform:translateY(0)}
 }
 
-/* 🎆 BIG FIREWORKS */
+/* 🎆 REAL FIREWORKS */
 .firework{
   position:absolute;
   width:6px;height:6px;
-  background:gold;
-  border-radius:50%;
-  animation:explode 2s infinite;
+  pointer-events:none;
 }
-@keyframes explode{
-  0%{transform:scale(0);opacity:1}
-  100%{transform:scale(18);opacity:0}
+
+.firework span{
+  position:absolute;
+  width:4px;height:22px;
+  background:var(--c);
+  transform-origin:bottom center;
+  animation:blast 1.4s ease-out forwards;
+  box-shadow:0 0 12px var(--c);
+}
+
+@keyframes blast{
+  0%{transform:scaleY(0);opacity:1}
+  100%{transform:scaleY(1.8);opacity:0}
 }
 
 /* 🔊 Mute */
@@ -94,6 +102,7 @@ p{margin-top:10px}
   padding:12px 14px;
   border-radius:50%;
   font-size:16px;
+  z-index:10;
 }
 </style>
 </head>
@@ -145,20 +154,46 @@ function openBox(){
   document.getElementById("text").classList.add("show");
 
   boxS.play();
-  s1.volume=1;s2.volume=.5;
+  fireS.play();
+
+  s1.volume=1;
+  s2.volume=.5;
   s1.play();
   s1.onended=()=>s2.play();
 
-  fireS.play();
-  for(let i=0;i<60;i++){
-    const fw=document.createElement("div");
-    fw.className="firework";
-    fw.style.left=Math.random()*100+"vw";
-    fw.style.top=Math.random()*100+"vh";
-    document.body.appendChild(fw);
+  megaFireworks();
+  setInterval(megaFireworks,2000);
+}
+
+/* 🎆 Fireworks Logic */
+function createFirework(x,y){
+  const colors=["#FFD700","#FF3B3B","#4FC3F7","#B388FF","#FF9800"];
+  const fw=document.createElement("div");
+  fw.className="firework";
+  fw.style.left=x+"px";
+  fw.style.top=y+"px";
+  const color=colors[Math.floor(Math.random()*colors.length)];
+
+  for(let i=0;i<16;i++){
+    const spark=document.createElement("span");
+    spark.style.setProperty("--c",color);
+    spark.style.transform=`rotate(${i*22.5}deg)`;
+    fw.appendChild(spark);
+  }
+  document.body.appendChild(fw);
+  setTimeout(()=>fw.remove(),1400);
+}
+
+function megaFireworks(){
+  for(let i=0;i<8;i++){
+    createFirework(
+      Math.random()*window.innerWidth,
+      Math.random()*window.innerHeight*0.7
+    );
   }
 }
 
+/* 🔇 Mute */
 function toggleMute(e){
   e.stopPropagation();
   const muted=s1.muted;
