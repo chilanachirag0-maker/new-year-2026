@@ -6,7 +6,12 @@
 <title>Happy New Year 2026</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
 
 body{
   height:100vh;
@@ -18,30 +23,36 @@ body{
   color:white;
 }
 
-.container{text-align:center;z-index:2}
+.container{
+  text-align:center;
+  z-index:2;
+}
 
 /* 🎁 BOX */
 .box{
-  width:150px;height:150px;
+  width:150px;
+  height:150px;
   background:linear-gradient(145deg,#1e3c72,#2a5298);
   border-radius:18px;
-  box-shadow:0 0 45px rgba(255,215,0,.9);
+  box-shadow:0 0 45px rgba(255,215,0,0.9);
   margin:auto;
   cursor:pointer;
   animation:float 2s infinite;
   position:relative;
 }
+
 .box::after{
   content:"🎁";
   font-size:60px;
   position:absolute;
-  top:50%;left:50%;
+  top:50%;
+  left:50%;
   transform:translate(-50%,-50%);
 }
 
 @keyframes float{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-14px)}
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-14px);}
 }
 
 /* Countdown */
@@ -52,52 +63,79 @@ body{
 }
 
 /* Reveal text */
-.reveal{opacity:0;transform:translateY(40px)}
-.show{animation:reveal 2s forwards}
+.reveal{
+  opacity:0;
+  transform:translateY(40px);
+}
+
+.show{
+  animation:reveal 2s forwards;
+}
+
+@keyframes reveal{
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
 
 .year{
   font-size:5rem;
   color:gold;
   text-shadow:0 0 25px gold,0 0 55px goldenrod;
 }
+
 h1{
   font-size:3rem;
   letter-spacing:5px;
   color:#ffd700;
 }
-p{margin-top:10px}
-.signature{margin-top:30px;opacity:.85}
 
-@keyframes reveal{
-  to{opacity:1;transform:translateY(0)}
+p{
+  margin-top:10px;
 }
 
-/* 🎆 REAL FIREWORKS */
+.signature{
+  margin-top:30px;
+  opacity:0.85;
+}
+
+/* 🎆 REAL FIREWORKS (DOT EXPLOSION) */
 .firework{
   position:absolute;
-  width:6px;height:6px;
+  width:10px;
+  height:10px;
   pointer-events:none;
 }
 
-.firework span{
+.firework i{
   position:absolute;
-  width:4px;height:22px;
+  width:6px;
+  height:6px;
   background:var(--c);
-  transform-origin:bottom center;
-  animation:blast 1.4s ease-out forwards;
+  border-radius:50%;
   box-shadow:0 0 12px var(--c);
+  animation:explode 1.4s ease-out forwards;
 }
 
-@keyframes blast{
-  0%{transform:scaleY(0);opacity:1}
-  100%{transform:scaleY(1.8);opacity:0}
+@keyframes explode{
+  0%{
+    transform:translate(0,0);
+    opacity:1;
+  }
+  100%{
+    transform:translate(var(--x),var(--y));
+    opacity:0;
+  }
 }
 
-/* 🔊 Mute */
+/* 🔊 Mute button */
 .mute{
   position:fixed;
-  bottom:20px;right:20px;
-  background:#222;color:white;
+  bottom:20px;
+  right:20px;
+  background:#222;
+  color:white;
   border:none;
   padding:12px 14px;
   border-radius:50%;
@@ -130,18 +168,21 @@ p{margin-top:10px}
 
 <script>
 let started=false;
-const s1=song1,s2=song2,boxS=boxSound,fireS=fireSound;
+const s1=song1, s2=song2, boxS=boxSound, fireS=fireSound;
 const count=document.getElementById("count");
 
 function startCountdown(){
   if(started) return;
   started=true;
+
   let i=3;
   count.textContent=i;
+
   const timer=setInterval(()=>{
     i--;
-    if(i>0){count.textContent=i;}
-    else{
+    if(i>0){
+      count.textContent=i;
+    }else{
       clearInterval(timer);
       count.textContent="";
       openBox();
@@ -157,38 +198,45 @@ function openBox(){
   fireS.play();
 
   s1.volume=1;
-  s2.volume=.5;
+  s2.volume=0.5;
   s1.play();
   s1.onended=()=>s2.play();
 
-  megaFireworks();
-  setInterval(megaFireworks,2000);
+  startFireworks();
+  setInterval(startFireworks,2000);
 }
 
-/* 🎆 Fireworks Logic */
-function createFirework(x,y){
+/* 🎆 Firework logic */
+function fireworkBurst(x,y){
   const colors=["#FFD700","#FF3B3B","#4FC3F7","#B388FF","#FF9800"];
   const fw=document.createElement("div");
   fw.className="firework";
   fw.style.left=x+"px";
   fw.style.top=y+"px";
+
   const color=colors[Math.floor(Math.random()*colors.length)];
 
-  for(let i=0;i<16;i++){
-    const spark=document.createElement("span");
-    spark.style.setProperty("--c",color);
-    spark.style.transform=`rotate(${i*22.5}deg)`;
-    fw.appendChild(spark);
+  for(let i=0;i<18;i++){
+    const dot=document.createElement("i");
+    const angle=(Math.PI*2*i)/18;
+    const radius=120;
+
+    dot.style.setProperty("--c",color);
+    dot.style.setProperty("--x",Math.cos(angle)*radius+"px");
+    dot.style.setProperty("--y",Math.sin(angle)*radius+"px");
+
+    fw.appendChild(dot);
   }
+
   document.body.appendChild(fw);
   setTimeout(()=>fw.remove(),1400);
 }
 
-function megaFireworks(){
-  for(let i=0;i<8;i++){
-    createFirework(
+function startFireworks(){
+  for(let i=0;i<5;i++){
+    fireworkBurst(
       Math.random()*window.innerWidth,
-      Math.random()*window.innerHeight*0.7
+      Math.random()*window.innerHeight*0.6
     );
   }
 }
