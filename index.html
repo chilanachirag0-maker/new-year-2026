@@ -10,7 +10,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:'Segoe UI', sans-serif;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 body{
@@ -28,22 +28,7 @@ body{
   z-index:2;
 }
 
-/* Instruction text */
-.instruction{
-  font-size:1.1rem;
-  margin-bottom:14px;
-  color:#e0e0e0;
-}
-
-/* Countdown numbers */
-.count{
-  font-size:5rem;
-  color:gold;
-  text-shadow:0 0 25px gold,0 0 50px goldenrod;
-  margin-bottom:15px;
-}
-
-/* 🎁 Gift Box */
+/* 🎁 BOX */
 .box{
   width:150px;
   height:150px;
@@ -70,6 +55,13 @@ body{
   50%{transform:translateY(-14px);}
 }
 
+/* Countdown */
+.countdown{
+  font-size:4rem;
+  color:gold;
+  margin-bottom:20px;
+}
+
 /* Reveal text */
 .reveal{
   opacity:0;
@@ -81,7 +73,10 @@ body{
 }
 
 @keyframes reveal{
-  to{opacity:1;transform:translateY(0);}
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
 }
 
 .year{
@@ -96,10 +91,16 @@ h1{
   color:#ffd700;
 }
 
-p{margin-top:10px;}
-.signature{margin-top:30px;opacity:0.85}
+p{
+  margin-top:10px;
+}
 
-/* 🎆 Fireworks */
+.signature{
+  margin-top:30px;
+  opacity:0.85;
+}
+
+/* 🎆 REAL FIREWORKS (DOT EXPLOSION) */
 .firework{
   position:absolute;
   width:10px;
@@ -118,11 +119,17 @@ p{margin-top:10px;}
 }
 
 @keyframes explode{
-  0%{transform:translate(0,0);opacity:1;}
-  100%{transform:translate(var(--x),var(--y));opacity:0;}
+  0%{
+    transform:translate(0,0);
+    opacity:1;
+  }
+  100%{
+    transform:translate(var(--x),var(--y));
+    opacity:0;
+  }
 }
 
-/* 🔊 Mute */
+/* 🔊 Mute button */
 .mute{
   position:fixed;
   bottom:20px;
@@ -141,13 +148,7 @@ p{margin-top:10px;}
 <body>
 
 <div class="container" onclick="startCountdown()">
-
-  <div class="instruction">
-    Click on the box. A small gift for you.🎁
-  </div>
-
-  <div id="counter" class="count"></div>
-
+  <div id="count" class="countdown">Tap the Box</div>
   <div class="box" id="box"></div>
 
   <div id="text" class="reveal">
@@ -167,34 +168,31 @@ p{margin-top:10px;}
 
 <script>
 let started=false;
-const counter=document.getElementById("counter");
-const box=document.getElementById("box");
-const text=document.getElementById("text");
-
 const s1=song1, s2=song2, boxS=boxSound, fireS=fireSound;
+const count=document.getElementById("count");
 
 function startCountdown(){
   if(started) return;
   started=true;
 
-  let num=3;
-  counter.textContent=num;
+  let i=3;
+  count.textContent=i;
 
   const timer=setInterval(()=>{
-    num--;
-    if(num>0){
-      counter.textContent=num;
+    i--;
+    if(i>0){
+      count.textContent=i;
     }else{
       clearInterval(timer);
-      counter.textContent="";
+      count.textContent="";
       openBox();
     }
   },1000);
 }
 
 function openBox(){
-  box.style.display="none";
-  text.classList.add("show");
+  document.getElementById("box").style.display="none";
+  document.getElementById("text").classList.add("show");
 
   boxS.play();
   fireS.play();
@@ -208,7 +206,7 @@ function openBox(){
   setInterval(startFireworks,2000);
 }
 
-/* 🎆 Fireworks logic */
+/* 🎆 Firework logic */
 function fireworkBurst(x,y){
   const colors=["#FFD700","#FF3B3B","#4FC3F7","#B388FF","#FF9800"];
   const fw=document.createElement("div");
@@ -254,4 +252,3 @@ function toggleMute(e){
 
 </body>
 </html>
-
